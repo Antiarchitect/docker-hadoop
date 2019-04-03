@@ -1,21 +1,32 @@
 version: "2"
 
 services:
-  namenode:
+  namenode1:
     image: bde2020/hadoop-namenode:1.1.0-hadoop2.7.1-java8
-    container_name: namenode
+    container_name: namenode1
     volumes:
-      - hadoop_namenode:/hadoop/dfs/name
+      - hadoop_namenode1:/hadoop/dfs/name
     environment:
       - CLUSTER_NAME=test
     env_file:
       - ./hadoop.env
   
+  namenode2:
+    image: bde2020/hadoop-namenode:1.1.0-hadoop2.7.1-java8
+    container_name: namenode2
+    volumes:
+      - hadoop_namenode2:/hadoop/dfs/name
+    environment:
+      - CLUSTER_NAME=test
+    env_file:
+      - ./hadoop.env
+
   resourcemanager:
     image: bde2020/hadoop-resourcemanager:1.1.0-hadoop2.7.1-java8
     container_name: resourcemanager
     depends_on:
-      - namenode
+      - namenode1
+      - namenode2
       - datanode1
       - datanode2
     env_file:
@@ -25,7 +36,8 @@ services:
     image: bde2020/hadoop-historyserver:1.1.0-hadoop2.7.1-java8
     container_name: historyserver
     depends_on:
-      - namenode
+      - namenode1
+      - namenode2
       - datanode1
       - datanode2
     volumes:
@@ -37,7 +49,8 @@ services:
     image: bde2020/hadoop-nodemanager:1.1.0-hadoop2.7.1-java8
     container_name: nodemanager1
     depends_on:
-      - namenode
+      - namenode1
+      - namenode2
       - datanode1
       - datanode2
     env_file:
@@ -47,7 +60,8 @@ services:
     image: bde2020/hadoop-datanode:1.1.0-hadoop2.7.1-java8
     container_name: datanode1
     depends_on:
-      - namenode
+      - namenode1
+      - namenode2
     volumes:
       - hadoop_datanode1:/hadoop/dfs/data
     env_file:
@@ -57,7 +71,8 @@ services:
     image: bde2020/hadoop-datanode:1.1.0-hadoop2.7.1-java8
     container_name: datanode2
     depends_on:
-      - namenode
+      - namenode1
+      - namenode2
     volumes:
       - hadoop_datanode2:/hadoop/dfs/data
     env_file:
@@ -67,14 +82,16 @@ services:
     image: bde2020/hadoop-datanode:1.1.0-hadoop2.7.1-java8
     container_name: datanode3
     depends_on:
-      - namenode
+      - namenode1
+      - namenode2
     volumes:
       - hadoop_datanode3:/hadoop/dfs/data
     env_file:
       - ./hadoop.env
 
 volumes:
-  hadoop_namenode:
+  hadoop_namenode1:
+  hadoop_namenode2:
   hadoop_datanode1:
   hadoop_datanode2:
   hadoop_datanode3:
